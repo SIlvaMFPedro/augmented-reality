@@ -2,11 +2,11 @@
 #   IMPORTS
 # ------------------------
 # Import the necessary packages
-from json_parser import JsonReader
-from camera_calibration import CameraCalibration
-from threaded_webcam import WebCamVideoStream
-from markers.aruco_marker import ArucoMarker
-from markers.natural_feature_marker import NaturalFeatureMarker
+from src.json_parser import JsonReader
+from src.camera_calibration import CameraCalibration
+from src.threaded_webcam import WebCamVideoStream
+from src.markers.aruco_marker import ArucoMarker
+from src.markers.natural_feature_marker import NaturalFeatureMarker
 import cv2
 
 

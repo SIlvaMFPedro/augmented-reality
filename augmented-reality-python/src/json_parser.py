@@ -3,7 +3,7 @@
 # ------------------------
 # Import the necessary packages
 import json
-from singleton import Singleton
+from src.singleton import Singleton
 from pprint import pprint
 
 
