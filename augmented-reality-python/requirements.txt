@@ -1,0 +1,8 @@
+matplotlib
+numpy
+opencv-contrib-python
+opencv-python
+Pillow
+protobuf
+pyglfw
+PyOpenGL

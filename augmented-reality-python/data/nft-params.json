@@ -1,0 +1,13 @@
+{
+  "calibration_path" : "data/calibration.yaml",
+  "marker_type" : "nft",
+  "marker_params" :{
+    "marker_path" : "./assets/stones.jpg",
+    "feature_type" : "ORB",
+    "matcher_type" : "flann",
+    "debug_draw" : true
+  },
+  "3d_object" : {
+    "obj_path" : ""
+  }
+}
