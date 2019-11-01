@@ -77,4 +77,63 @@ export default class AFrameRenderer extends Component {
   static childContextTypes = {
     inherent: PropTypes.bool
   };
+  // This prop is used by the <Marker /> component to decide whether to use the modelViewMatrix or the cameraTransformMatrix
+  getChildContext() {
+    return {
+      inherent: this.props.inherent
+    };
+  }
+  // Clear the rendering context
+  // Fallback if <a-scene /> primative fails to dispose the renderer
+  componentWillMount = () => {
+    this.renderer && this.renderer.dispose();
+  };
+  // Pass <a-scene /> reference as a prop which is useful for usage with aframe.io APIs
+  passSceneRef = (getSceneRef, ref) => getSceneRef(ref) || ref;
+  // Render the <a-scene> outside the parent container because the arjs adds the image (sourceType) is outside the
+  // parent container and the tracking module cannot track the position of the marker lying outside of its context.
+  // Alternatively we can change this behavior in arjs's aframe fork but this is not convenient at all because it may
+  // break the internals (AR.js, aframe fork and the threex.artoolkit)
+  renderVirtualComponent = component =>
+    ReactDOM.createPortal(component, this.container);
+  // Use the base sic marker component and a camera entity (modelViewMatrix) to determine what the user sees.
+  // There are no mappings for props on this component i.e userHeight: 0 and the camera frame is static and its present
+  // in negative z-axis static at (0,0,0).
+  inherentMode = value => (value ? <a-camera-static /> : null);
+  // arjs toolkit parameter (the mappings are already validated in arjs)
+  prepareToolKitParams = parameters => {
+    let toolKitParams = "";
+    Object.keys(parameters).forEach(param => {
+      if (PARAMETERS.includes(param)) {
+        toolKitParams += `${param}: ${parameters[param]};`;
+      }
+    });
+    return toolKitParams;
+  };
+  // Flush the output result
+  flush = props => {
+    const { arToolKit, children, getSceneRef, inherent, ...rest } = props;
+    return this.renderVirtualComponent(
+      <a-scene
+        // Forward the scene reference as it is useful in VR enter and exit events
+        // where this ref node can be use to add or remove content
+        ref={sceneRef =>
+          this.passSceneRef(getSceneRef, sceneRef) && (this.renderer = sceneRef)
+        }
+        // Remove full screen props from the canvas embedded
+        // Custom component registered by arjs
+        arjs={this.prepareToolKitParams(arToolKit)}
+        // Inject the rest of the component props
+        {...rest}
+      >
+        {children}
+        {this.inherentMode(inherent)}
+      </a-scene>
+    );
+  };
+  // Render the output result
+  render() {
+    // Renderless! (we currently use portals to render in body and not in parent container)
+    return this.flush(this.props);
+  }
 }
